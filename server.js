@@ -130,43 +130,66 @@ function viewEmployees() {
 
 // function to handle Add Role answer for the user
 const addRole = () => {
-  // prompt for info about new role
-  inquirer
-    .prompt([
-      {
-        name: 'title',
-        type: 'input',
-        message: 'Please provide a title for this new role you would like to add to your company?',
-      },
-      {
-        name: 'salary',
-        type: 'input',
-        message: 'Please provide a salary for this role:',
-        validate: function (value) {
-          var pass = Number.isInteger(+value)
-          if (pass) {
-            return true;
-          }
-          return 'Please make sure the salary is a number.'
-        },
-      }
-    ])
-    .then((answer) => {
-      // inserts a new role & salary into the database
-      connection.query(
-        'INSERT INTO department SET ?',
+  const sql = "SELECT * FROM department";
+  connection.query(sql, (err, results) => {
+    if (err) throw err;
+    // prompt for info about new role
+    inquirer
+      .prompt([
         {
-          title: answer.title,
-          salary: answer.salary
+          name: 'title',
+          type: 'input',
+          message: 'Please provide a title for this new role you would like to add to your company?',
         },
-        (err) => {
-          if (err) throw err;
-          console.log('This new role has been added to the company database.');
-          // re-prompt the user with the initial question
-          start();
+        {
+          name: 'salary',
+          type: 'input',
+          message: 'Please provide a salary for this role:',
+          validate: function (value) {
+            var pass = Number.isInteger(+value)
+            if (pass) {
+              return true;
+            }
+            return 'Please make sure the salary is a number.'
+          },
+        },
+        {
+          name: 'department',
+          type: 'list',
+          choices: () => {
+            let options = [];
+            for (let i = 0; i < results.length; i++) {
+              options.push(results[i].name);
+            }
+            return options;
+          },
+          message: 'Please advise what department this role is in'
         }
-      );
-    });
+      ])
+      .then((answer) => {
+        // inserts a new role & salary into the database
+        const dept;
+        for (let i = 0; i < results.length; i++) {
+          if (results[i].name === answer.department) {
+            dept = results[i];
+          }
+        }
+        connection.query(
+          'INSERT INTO role SET ?',
+          {
+            title: answer.title,
+            salary: answer.salary,
+            department_id: dept.id
+          },
+          (err) => {
+            if (err) throw err;
+            console.log('This new role has been added to the company database.');
+            // re-prompt the user with the initial question
+            start();
+          }
+        );
+      });
+  });
 };
 
 
@@ -187,18 +210,31 @@ const addEmployee = () => {
       },
       {
         name: 'role',
-        type: 'input',
+        type: 'list',
+        choices: () => {
+          let options = [];
+          for (let i = 0; i < results.length; i++) {
+            options.push(results[i].name);
+          }
+          return options;
+        },
         message: 'Please provide a role/title for this new employee:',
       },
     ])
     .then((answer) => {
       // inserts a employee into the database
+      const role;
+        for (let i = 0; i < results.length; i++) {
+          if (results[i].name === answer.role) {
+            role = results[i];
+          }
+        }
       connection.query(
         'INSERT INTO department SET ?',
         {
           first_name: answer.first,
           last_name: answer.last,
-          role_id: answer.role,
+          role_id: role.id,
         },
         (err) => {
           if (err) throw err;
