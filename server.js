@@ -16,3 +16,43 @@ const connection = mysql.createConnection({
   database: 'employeeTracker_DB',
 });
 
+// First question which prompts the user for what action they would like to take
+const start = () => {
+  inquirer
+    .prompt({
+      name: 'initialQuestion',
+      type: 'list',
+      message: 'Welcome to the company employee database. What would you like to do?',
+      choices: [
+        'Add Department',
+        'Add Role',
+        'Add Employee',
+        'View Departments',
+        'View Roles',
+        'View Employees',
+        'Update Employee Role',
+        'Exit'
+      ],
+    })
+
+    .then((answer) => {
+      // based on their answer, direct the user to the next step
+      if (answer.initialQuestion === 'Add Department') {
+        addDepartment();
+      } else if (answer.initialQuestion === 'Add Role') {
+        addRole();
+      } else if (answer.initialQuestion === 'Add Employee') {
+        addEmployee();
+      } else if (answer.initialQuestion === 'View Departments') {
+        viewDepartments();
+      } else if (answer.initialQuestion === 'View Roles') {
+        viewEmployees();
+      } else if (answer.initialQuestion === 'View Employees') {
+        viewRoles();
+      } else if (answer.initialQuestion === 'Update Employee Role') {
+        updateEmployee();
+      } else {
+        connection.end();
+      }
+    });
+};
