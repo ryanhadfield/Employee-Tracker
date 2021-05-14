@@ -16,6 +16,7 @@ const connection = mysql.createConnection({
   database: 'employeeTracker_DB',
 });
 
+
 // First question which prompts the user for what action they would like to take
 const start = () => {
   inquirer
@@ -56,3 +57,34 @@ const start = () => {
       }
     });
 };
+
+
+// function to handle Add Department answer for the user
+const addDepartment = () => {
+  // prompt for info about department
+  inquirer
+    .prompt([
+      {
+        name: 'newDepartment',
+        type: 'input',
+        message: 'What is name of the department you would like to add?',
+      },
+    ])
+    .then((answer) => {
+      // when finished prompting, insert a new department into the db with that info
+      connection.query(
+        'INSERT INTO department SET ?',
+        {
+          department: answer.addDepartment
+        },
+        (err) => {
+          if (err) throw err;
+          console.log('Your new department has been added to the company database.');
+          // re-prompt the user if they would like to 
+          start();
+        }
+      );
+    });
+};
+
+
