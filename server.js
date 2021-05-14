@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 
+
 // create the connection information for the sql database
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -23,7 +24,7 @@ const start = () => {
     .prompt({
       name: 'initialQuestion',
       type: 'list',
-      message: 'Welcome to the company employee database. What would you like to do?',
+      message: 'Welcome to the company department & employee database. What would you like to do?',
       choices: [
         'Add Department',
         'Add Role',
@@ -47,9 +48,9 @@ const start = () => {
       } else if (answer.initialQuestion === 'View Departments') {
         viewDepartments();
       } else if (answer.initialQuestion === 'View Roles') {
-        viewEmployees();
-      } else if (answer.initialQuestion === 'View Employees') {
         viewRoles();
+      } else if (answer.initialQuestion === 'View Employees') {
+        viewEmployees();
       } else if (answer.initialQuestion === 'Update Employee Role') {
         updateEmployee();
       } else {
@@ -75,7 +76,7 @@ const addDepartment = () => {
       connection.query(
         'INSERT INTO department SET ?',
         {
-          department: answer.addDepartment
+          name: answer.newDepartment
         },
         (err) => {
           if (err) throw err;
@@ -91,53 +92,49 @@ const addDepartment = () => {
 // function to handle View Departments answer for the user
 function viewDepartments() {
   // query the database for all departments
-  var query = "SELECT * FROM department";
-  connection.query(query, function (err, res) {
-    console.log(`DEPARTMENTS:`)
-    res.forEach(department => {
-      console.log(`ID: ${department.id} | Name: ${department.name}`)
-    })
+  connection.query('SELECT * FROM department', (err, res) => {
+    if (err) throw err;
+    console.log('DEPARTMENTS:')
+    console.table(res);
     // re-prompt the user with the initial question
     start();
   });
 };
+
 
 // function to handle View Roles answer for the user
 function viewRoles() {
   // query the database for all roles
-  var query = "SELECT * FROM role";
-  connection.query(query, function (err, res) {
-    console.log(`ROLES:`)
-    res.forEach(role => {
-      console.log(`ID: ${role.id} | Title: ${role.title} | Salary: ${role.salary} | Department ID: ${role.department_id}`);
-    })
+  connection.query('SELECT * FROM role', (err, res) => {
+    if (err) throw err;
+    console.log('Company Roles:')
+    console.table(res);
     // re-prompt the user with the initial question
     start();
   });
 };
+
 
 // function to handle View Employees answer for the user
 function viewEmployees() {
   // query the database for all employees
-  var query = "SELECT * FROM employee";
-  connection.query(query, function (err, res) {
-    console.log(`EMPLOYEES:`)
-    res.forEach(employee => {
-      console.log(`ID: ${employee.id} | Name: ${employee.first_name} ${employee.last_name} | Role ID: ${employee.role_id} | Manager ID: ${employee.manager_id}`);
-    })
+  connection.query('SELECT * FROM employee', (err, res) => {
+    if (err) throw err;
+    console.log('Company Roster:')
+    console.table(res);
     // re-prompt the user with the initial question
     start();
   });
 };
 
 
- // function to handle Add Role answer for the user
- const addRole = () => {
+// function to handle Add Role answer for the user
+const addRole = () => {
   // prompt for info about new role
   inquirer
     .prompt([
       {
-        name: 'newRole',
+        name: 'title',
         type: 'input',
         message: 'Please provide a title for this new role you would like to add to your company?',
       },
@@ -145,23 +142,22 @@ function viewEmployees() {
         name: 'salary',
         type: 'input',
         message: 'Please provide a salary for this role:',
-      },
-      validate: function (value) {
-        var pass = Number.isInteger(+value)
-        if (pass) {
-          return true;
-        }
-        return 'Please make sure the salary is a number.'
-      },
+        validate: function (value) {
+          var pass = Number.isInteger(+value)
+          if (pass) {
+            return true;
+          }
+          return 'Please make sure the salary is a number.'
+        },
+      }
     ])
     .then((answer) => {
       // inserts a new role & salary into the database
-      const newRole = answers.newRole;
-      const newSalary = answers.salary;
       connection.query(
         'INSERT INTO department SET ?',
         {
-          role: answer.addRole
+          title: answer.title,
+          salary: answer.salary
         },
         (err) => {
           if (err) throw err;
@@ -173,6 +169,46 @@ function viewEmployees() {
     });
 };
 
+
+// function to handle Add Employee answer for the user
+const addEmployee = () => {
+  // prompt for info about new role
+  inquirer
+    .prompt([
+      {
+        name: 'first',
+        type: 'input',
+        message: 'Please provide a first name for this new employee:',
+      },
+      {
+        name: 'last',
+        type: 'input',
+        message: 'Please provide a last name for this new employee:',
+      },
+      {
+        name: 'role',
+        type: 'input',
+        message: 'Please provide a role/title for this new employee:',
+      },
+    ])
+    .then((answer) => {
+      // inserts a employee into the database
+      connection.query(
+        'INSERT INTO department SET ?',
+        {
+          first_name: answer.first,
+          last_name: answer.last,
+          role_id: answer.role,
+        },
+        (err) => {
+          if (err) throw err;
+          console.log('This new role has been added to the company database.');
+          // re-prompt the user with the initial question
+          start();
+        }
+      );
+    });
+};
 
 // connect to the mysql server and sql database
 connection.connect((err) => {
