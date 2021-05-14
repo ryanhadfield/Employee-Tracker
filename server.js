@@ -71,7 +71,7 @@ const addDepartment = () => {
       },
     ])
     .then((answer) => {
-      // when finished prompting, insert a new department into the db with that info
+      // when finished prompting, insert a new department into the database with that info
       connection.query(
         'INSERT INTO department SET ?',
         {
@@ -80,7 +80,7 @@ const addDepartment = () => {
         (err) => {
           if (err) throw err;
           console.log('Your new department has been added to the company database.');
-          // re-prompt the user if they would like to 
+          // re-prompt the user with the initial question
           start();
         }
       );
@@ -97,6 +97,7 @@ function viewDepartments() {
     res.forEach(department => {
       console.log(`ID: ${department.id} | Name: ${department.name}`)
     })
+    // re-prompt the user with the initial question
     start();
   });
 };
@@ -110,6 +111,7 @@ function viewRoles() {
     res.forEach(role => {
       console.log(`ID: ${role.id} | Title: ${role.title} | Salary: ${role.salary} | Department ID: ${role.department_id}`);
     })
+    // re-prompt the user with the initial question
     start();
   });
 };
@@ -123,6 +125,58 @@ function viewEmployees() {
     res.forEach(employee => {
       console.log(`ID: ${employee.id} | Name: ${employee.first_name} ${employee.last_name} | Role ID: ${employee.role_id} | Manager ID: ${employee.manager_id}`);
     })
+    // re-prompt the user with the initial question
     start();
   });
 };
+
+
+ // function to handle Add Role answer for the user
+ const addRole = () => {
+  // prompt for info about new role
+  inquirer
+    .prompt([
+      {
+        name: 'newRole',
+        type: 'input',
+        message: 'Please provide a title for this new role you would like to add to your company?',
+      },
+      {
+        name: 'salary',
+        type: 'input',
+        message: 'Please provide a salary for this role:',
+      },
+      validate: function (value) {
+        var pass = Number.isInteger(+value)
+        if (pass) {
+          return true;
+        }
+        return 'Please make sure the salary is a number.'
+      },
+    ])
+    .then((answer) => {
+      // inserts a new role & salary into the database
+      const newRole = answers.newRole;
+      const newSalary = answers.salary;
+      connection.query(
+        'INSERT INTO department SET ?',
+        {
+          role: answer.addRole
+        },
+        (err) => {
+          if (err) throw err;
+          console.log('This new role has been added to the company database.');
+          // re-prompt the user with the initial question
+          start();
+        }
+      );
+    });
+};
+
+
+// connect to the mysql server and sql database
+connection.connect((err) => {
+  if (err) throw err;
+  // run the start function after the connection is made to prompt the user
+  start();
+});
