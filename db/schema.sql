@@ -14,12 +14,12 @@ CREATE TABLE department (
 
 -- Role Table
 CREATE TABLE role (
-    id INT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(30) NOT NULL,
-    salary DECIMAL(10,2) NOT NULL,
-    department_id INT NOT NULL,
-    PRIMARY KEY (id)
-    FOREIGN KEY (department_id) REFERENCES department(id)
+    id INT AUTO_INCREMENT,
+    title VARCHAR(30) NOT NULL, 
+    salary DECIMAL(8,0) NOT NULL, 
+    department_id INT NOT NULL, 
+    PRIMARY KEY(id),
+    FOREIGN KEY(department_id) REFERENCES department(id)
 );
 
 -- Employee Table
@@ -57,52 +57,52 @@ VALUE ("Human Resources");
 INSERT INTO role (title, salary, department_id)
 VALUE ("Marketing Director", 125000, 1);
 
-INSERT INTO role (title, salary)
+INSERT INTO role (title, salary, department_id)
 VALUE ("Graphic Designer", 75000, 2);
 
-INSERT INTO role (title, salary)
+INSERT INTO role (title, salary, department_id)
 VALUE ("Web Developer", 100000, 3);
 
-INSERT INTO role (title, salary)
+INSERT INTO role (title, salary, department_id)
 VALUE ("Sales Rep", 65000, 4);
 
-INSERT INTO role (title, salary)
-VALUE ("Sales Manager", 850000, 5);
+INSERT INTO role (title, salary, department_id)
+VALUE ("Sales Manager", 85000, 5);
 
-INSERT INTO role (title, salary)
-VALUE ("Software Engineer", 120000, 6);
+INSERT INTO role (title, salary, department_id)
+VALUE ("Software Engineer", 120000, 2);
 
-INSERT INTO role (title, salary)
-VALUE ("Accounts Payable Clerk", 70000, 7);
+INSERT INTO role (title, salary, department_id)
+VALUE ("Accounts Payable Clerk", 70000, 4);
 
-INSERT INTO role (title, salary)
-VALUE ("Accounts Receivable Clerk", 70000, 8);
+INSERT INTO role (title, salary, department_id)
+VALUE ("Accounts Receivable Clerk", 70000, 4);
 
-INSERT INTO role (title, salary)
-VALUE ("HR Generalist", 555000, 9);
+INSERT INTO role (title, salary, department_id)
+VALUE ("HR Generalist", 55500, 5);
 
 
 -- Employee seeds
-INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Ron", "Burgundy", null, 1);
+INSERT INTO employee (first_name, last_name, role_id)
+VALUE ("Ron", "Burgundy", 1);
 
-INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Veronica", "Corningstone", 1, 2);
+INSERT INTO employee (first_name, last_name, role_id)
+VALUE ("Veronica", "Corningstone", 2);
 
-INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Brian","Fantana", 6, 3);
+INSERT INTO employee (first_name, last_name, role_id)
+VALUE ("Brian","Fantana", 3);
 
-INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Brick", "Tamland", 5, 4);
+INSERT INTO employee (first_name, last_name, role_id)
+VALUE ("Brick", "Tamland", 4);
 
-INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Champ", "Kind", null, 9);
+INSERT INTO employee (first_name, last_name, role_id)
+VALUE ("Champ", "Kind",  5);
 
-INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Ed", "Harkin", null, 5);
+INSERT INTO employee (first_name, last_name, role_id)
+VALUE ("Ed", "Harkin", 6);
 
-INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUE ("Garth", "Holliday", null, 7);
+INSERT INTO employee (first_name, last_name, role_id)
+VALUE ("Garth", "Holliday", 7);
 
 
 SELECT * FROM department;
