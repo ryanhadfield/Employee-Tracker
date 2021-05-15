@@ -128,10 +128,10 @@ function viewEmployees() {
 };
 
 
-// function to handle Add Role answer for the user
+// function to handle Add Role answers from the user
 const addRole = () => {
   const sql = "SELECT * FROM department";
-  connection.query(sql, (err, results) => {
+  connection.query(sql, (err, res) => {
     if (err) throw err;
     // prompt for info about new role
     inquirer
@@ -158,8 +158,8 @@ const addRole = () => {
           type: 'list',
           choices: () => {
             let options = [];
-            for (let i = 0; i < results.length; i++) {
-              options.push(results[i].name);
+            for (let i = 0; i < res.length; i++) {
+              options.push(res[i].name);
             }
             return options;
           },
@@ -169,9 +169,9 @@ const addRole = () => {
       .then((answer) => {
         // inserts a new role & salary into the database
         let dept;
-        for (let i = 0; i < results.length; i++) {
-          if (results[i].name === answer.department) {
-            dept = results[i];
+        for (let i = 0; i < res.length; i++) {
+          if (res[i].name === answer.department) {
+            dept = res[i];
           }
         }
         connection.query(
@@ -193,10 +193,10 @@ const addRole = () => {
 };
 
 
-// function to handle Add Employee answer for the user
+// function to handle Add Employee answers from the user
 const addEmployee = () => {
   const sql = "SELECT * FROM employee, role";
-  connection.query(sql, (err, results) => {
+  connection.query(sql, (err, res) => {
     if (err) throw err;
     // prompt for info about new role
     inquirer
@@ -216,8 +216,8 @@ const addEmployee = () => {
           type: 'list',
           choices: () => {
             let options = [];
-            for (let i = 0; i < results.length; i++) {
-              options.push(results[i].title);
+            for (let i = 0; i < res.length; i++) {
+              options.push(res[i].title);
             }
             let selectOptions = [...new Set(options)];
             return selectOptions;
@@ -228,9 +228,9 @@ const addEmployee = () => {
       .then((answer) => {
         // inserts a employee into the database
         let employeeRole;
-        for (let i = 0; i < results.length; i++) {
-          if (results[i].title === answer.role) {
-            employeeRole = results[i];
+        for (let i = 0; i < res.length; i++) {
+          if (res[i].title === answer.role) {
+            employeeRole = res[i];
           }
         }
         connection.query(
@@ -251,9 +251,78 @@ const addEmployee = () => {
   });
 };
 
-// connect to the mysql server and sql database
-connection.connect((err) => {
-  if (err) throw err;
-  // run the start function after the connection is made to prompt the user
-  start();
-});
+// function to handle Employee Role Update answers from the user
+const updateEmployee = () => {
+  const sql = "SELECT * FROM employee, role";
+  connection.query(sql, (err, res) => {
+    if (err) throw err;
+    // prompt for info about updated employee role
+    inquirer
+      .prompt([
+        {
+          name: 'employee',
+          type: 'list',
+          choices: () => {
+            let options = [];
+            for (let i = 0; i < res.length; i++) {
+              options.push(res[i].last_name);
+            }
+            let selectOptions = [...new Set(options)];
+            return selectOptions;
+          },
+          message: 'Which employee would you like to update?',
+        },
+        {
+          name: 'role',
+          type: 'list',
+          choices: () => {
+            let options = [];
+            for (let i = 0; i < res.length; i++) {
+              options.push(res[i].title);
+            }
+            let selectOptions = [...new Set(options)];
+            return selectOptions;
+          },
+          message: 'Please provide an updated role/title for this employee:',
+        },
+      ])
+      .then((answer) => {
+        // inserts a employee's new info into the database
+        let employeeUpdate;
+        let newTitle;
+        for (let i = 0; i < res.length; i++) {
+          if (res[i].title === answer.role) {
+            newTitle = res[i];
+          }
+        }
+        for (let i = 0; i < res.length; i++) {
+          if (res[i].last_name === answer.employee) {
+            employeeUpdate = res[i];
+          }
+        }
+        connection.query(
+          'UPDATE employee SET ? WHERE ?', [
+          {
+            last_name: employeeUpdate,
+          },
+          {
+            role_id: newTitle,
+          }],
+          (err) => {
+            if (err) throw err;
+            console.log("This employee's role has been updated in the company database.");
+            // re-prompt the user with the initial question
+            start();
+          }
+        );
+      });
+    });
+  };
+
+
+    // connect to the mysql server and sql database
+    connection.connect((err) => {
+      if (err) throw err;
+      // run the start function after the connection is made to prompt the user
+      start();
+    });
