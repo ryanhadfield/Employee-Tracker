@@ -168,7 +168,7 @@ const addRole = () => {
       ])
       .then((answer) => {
         // inserts a new role & salary into the database
-        const dept;
+        let dept;
         for (let i = 0; i < results.length; i++) {
           if (results[i].name === answer.department) {
             dept = results[i];
@@ -195,55 +195,60 @@ const addRole = () => {
 
 // function to handle Add Employee answer for the user
 const addEmployee = () => {
-  // prompt for info about new role
-  inquirer
-    .prompt([
-      {
-        name: 'first',
-        type: 'input',
-        message: 'Please provide a first name for this new employee:',
-      },
-      {
-        name: 'last',
-        type: 'input',
-        message: 'Please provide a last name for this new employee:',
-      },
-      {
-        name: 'role',
-        type: 'list',
-        choices: () => {
-          let options = [];
-          for (let i = 0; i < results.length; i++) {
-            options.push(results[i].name);
-          }
-          return options;
-        },
-        message: 'Please provide a role/title for this new employee:',
-      },
-    ])
-    .then((answer) => {
-      // inserts a employee into the database
-      const role;
-        for (let i = 0; i < results.length; i++) {
-          if (results[i].name === answer.role) {
-            role = results[i];
-          }
-        }
-      connection.query(
-        'INSERT INTO department SET ?',
+  const sql = "SELECT * FROM employee, role";
+  connection.query(sql, (err, results) => {
+    if (err) throw err;
+    // prompt for info about new role
+    inquirer
+      .prompt([
         {
-          first_name: answer.first,
-          last_name: answer.last,
-          role_id: role.id,
+          name: 'first',
+          type: 'input',
+          message: 'Please provide a first name for this new employee:',
         },
-        (err) => {
-          if (err) throw err;
-          console.log('This new role has been added to the company database.');
-          // re-prompt the user with the initial question
-          start();
+        {
+          name: 'last',
+          type: 'input',
+          message: 'Please provide a last name for this new employee:',
+        },
+        {
+          name: 'role',
+          type: 'list',
+          choices: () => {
+            let options = [];
+            for (let i = 0; i < results.length; i++) {
+              options.push(results[i].title);
+            }
+            let selectOptions = [...new Set(options)];
+            return selectOptions;
+          },
+          message: 'Please provide a role/title for this new employee:',
+        },
+      ])
+      .then((answer) => {
+        // inserts a employee into the database
+        let employeeRole;
+        for (let i = 0; i < results.length; i++) {
+          if (results[i].title === answer.role) {
+            employeeRole = results[i];
+          }
         }
-      );
-    });
+        connection.query(
+          'INSERT INTO employee SET ?',
+          {
+            first_name: answer.first,
+            last_name: answer.last,
+            role_id: employeeRole.id,
+          },
+          (err) => {
+            if (err) throw err;
+            console.log('This new role has been added to the company database.');
+            // re-prompt the user with the initial question
+            start();
+          }
+        );
+      });
+  });
 };
 
 // connect to the mysql server and sql database
