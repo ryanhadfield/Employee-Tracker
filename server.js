@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
+var figlet = require('figlet');
 
 
 // create the connection information for the sql database
@@ -17,6 +18,15 @@ const connection = mysql.createConnection({
   database: 'employeeTracker_DB',
 });
 
+
+figlet.text('Initech Company Directory', function(err, data) {
+  if (err) {
+      console.log('Something went wrong...');
+      console.dir(err);
+      return;
+  }
+  console.log(data)
+});
 
 // First question which prompts the user for what action they would like to take
 const start = () => {
@@ -328,3 +338,5 @@ connection.connect((err) => {
   // run the start function after the connection is made to prompt the user
   start();
 });
+
+
