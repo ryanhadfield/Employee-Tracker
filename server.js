@@ -156,6 +156,7 @@ const addRole = () => {
         {
           name: 'department',
           type: 'list',
+          message: 'Please advise what department this role is in',
           choices: () => {
             let options = [];
             for (let i = 0; i < res.length; i++) {
@@ -163,7 +164,6 @@ const addRole = () => {
             }
             return options;
           },
-          message: 'Please advise what department this role is in'
         }
       ])
       .then((answer) => {
@@ -214,6 +214,7 @@ const addEmployee = () => {
         {
           name: 'role',
           type: 'list',
+          message: 'Please provide a role/title for this new employee:',
           choices: () => {
             let options = [];
             for (let i = 0; i < res.length; i++) {
@@ -222,7 +223,6 @@ const addEmployee = () => {
             let selectOptions = [...new Set(options)];
             return selectOptions;
           },
-          message: 'Please provide a role/title for this new employee:',
         },
       ])
       .then((answer) => {
@@ -270,11 +270,12 @@ const updateEmployee = () => {
             let selectOptions = [...new Set(options)];
             return selectOptions;
           },
-          message: 'Which employee would you like to update?',
+          message: 'What is the last name of the employee you would like to update?',
         },
         {
           name: 'role',
           type: 'list',
+          message: 'Please provide an updated role/title for this employee:',
           choices: () => {
             let options = [];
             for (let i = 0; i < res.length; i++) {
@@ -283,7 +284,6 @@ const updateEmployee = () => {
             let selectOptions = [...new Set(options)];
             return selectOptions;
           },
-          message: 'Please provide an updated role/title for this employee:',
         },
       ])
       .then((answer) => {
@@ -291,23 +291,25 @@ const updateEmployee = () => {
         let employeeUpdate;
         let newTitle;
         for (let i = 0; i < res.length; i++) {
-          if (res[i].title === answer.role) {
-            newTitle = res[i];
-          }
-        }
-        for (let i = 0; i < res.length; i++) {
           if (res[i].last_name === answer.employee) {
             employeeUpdate = res[i];
           }
-        }
+        };
+        for (let i = 0; i < res.length; i++) {
+          if (res[i].title === answer.role) {
+            newTitle = res[i];
+          }
+        };
         connection.query(
-          'UPDATE employee SET ? WHERE ?', [
-          {
-            last_name: employeeUpdate,
-          },
-          {
-            role_id: newTitle,
-          }],
+          'UPDATE employee SET ? WHERE ?',
+          [
+            {
+              last_name: employeeUpdate.id,
+            },
+            {
+              role_id: newTitle.id,
+            }
+          ],
           (err) => {
             if (err) throw err;
             console.log("This employee's role has been updated in the company database.");
@@ -316,13 +318,13 @@ const updateEmployee = () => {
           }
         );
       });
-    });
-  };
+  });
+};
 
 
-    // connect to the mysql server and sql database
-    connection.connect((err) => {
-      if (err) throw err;
-      // run the start function after the connection is made to prompt the user
-      start();
-    });
+// connect to the mysql server and sql database
+connection.connect((err) => {
+  if (err) throw err;
+  // run the start function after the connection is made to prompt the user
+  start();
+});
