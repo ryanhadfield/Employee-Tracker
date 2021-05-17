@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-var figlet = require('figlet');
+const figlet = require('figlet');
 
 
 // create the connection information for the sql database
@@ -14,23 +14,17 @@ const connection = mysql.createConnection({
   user: 'root',
 
   // Be sure to update with your own MySQL password!
-  password: '',
+  password: 'bootcamp79',
   database: 'employeeTracker_DB',
 });
 
 
-figlet.text('Initech Company Directory', (err, data) => {
-  if (err) {
-    console.log('Something went wrong...');
-    console.dir(err);
-    return;
-  }
-  console.log(data)
-});
+
 
 // First question which prompts the user for what action they would like to take
-const start = () => {
-  inquirer
+const start = async () => {
+
+  const answer = await inquirer
     .prompt({
       name: 'initialQuestion',
       type: 'list',
@@ -47,26 +41,26 @@ const start = () => {
       ],
     })
 
-    .then((answer) => {
-      // based on their answer, direct the user to the next step
-      if (answer.initialQuestion === 'Add Department') {
-        addDepartment();
-      } else if (answer.initialQuestion === 'Add Role') {
-        addRole();
-      } else if (answer.initialQuestion === 'Add Employee') {
-        addEmployee();
-      } else if (answer.initialQuestion === 'View Departments') {
-        viewDepartments();
-      } else if (answer.initialQuestion === 'View Roles') {
-        viewRoles();
-      } else if (answer.initialQuestion === 'View Employees') {
-        viewEmployees();
-      } else if (answer.initialQuestion === 'Update Employee Role') {
-        updateEmployee();
-      } else {
-        connection.end();
-      }
-    });
+
+  // based on their answer, direct the user to the next step
+  if (answer.initialQuestion === 'Add Department') {
+    addDepartment();
+  } else if (answer.initialQuestion === 'Add Role') {
+    addRole();
+  } else if (answer.initialQuestion === 'Add Employee') {
+    addEmployee();
+  } else if (answer.initialQuestion === 'View Departments') {
+    viewDepartments();
+  } else if (answer.initialQuestion === 'View Roles') {
+    viewRoles();
+  } else if (answer.initialQuestion === 'View Employees') {
+    viewEmployees();
+  } else if (answer.initialQuestion === 'Update Employee Role') {
+    updateEmployee();
+  } else {
+    connection.end();
+  }
+
 };
 
 
@@ -335,10 +329,19 @@ const updateEmployee = () => {
 
 
 // connect to the mysql server and sql database
-connection.connect((err) => {
-  if (err) throw err;
+connection.connect( (err) => {
+  if (err) throw err
   // run the start function after the connection is made to prompt the user
-  start();
+   figlet.text('Initech Company Directory', (err, data) => {
+    if (err) {
+      console.log('Something went wrong...');
+      console.dir(err);
+      return;
+    }
+    console.log(data)
+    start();
+  });
+
 });
 
 
