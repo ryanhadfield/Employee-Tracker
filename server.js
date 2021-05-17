@@ -14,7 +14,7 @@ const connection = mysql.createConnection({
   user: 'root',
 
   // Be sure to update with your own MySQL password!
-  password: 'bootcamp79',
+  password: '',
   database: 'employeeTracker_DB',
 });
 
