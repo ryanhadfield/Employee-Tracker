@@ -114,8 +114,9 @@ function viewDepartments() {
 
 // function to handle View Roles answer for the user
 function viewRoles() {
+  let query = 'SELECT role.id, role.title, department.name, role.salary FROM role INNER JOIN department ON role.department_id = department.id'
   // query the database for all roles
-  connection.query('SELECT * FROM role', (err, res) => {
+  connection.query(query, (err, res) => {
     if (err) throw err;
     console.log('Company Roles:')
     console.table(res);
