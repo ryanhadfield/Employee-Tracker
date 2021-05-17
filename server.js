@@ -19,11 +19,11 @@ const connection = mysql.createConnection({
 });
 
 
-figlet.text('Initech Company Directory', function(err, data) {
+figlet.text('Initech Company Directory', (err, data) => {
   if (err) {
-      console.log('Something went wrong...');
-      console.dir(err);
-      return;
+    console.log('Something went wrong...');
+    console.dir(err);
+    return;
   }
   console.log(data)
 });
@@ -127,8 +127,9 @@ function viewRoles() {
 
 // function to handle View Employees answer for the user
 function viewEmployees() {
+  let query = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id'
   // query the database for all employees
-  connection.query('SELECT * FROM employee', (err, res) => {
+  connection.query(query, (err, res) => {
     if (err) throw err;
     console.log('Company Roster:')
     console.table(res);
